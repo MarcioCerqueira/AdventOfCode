@@ -52,7 +52,7 @@ int main(int argc, char **argv)
     santaPositions.resize(input.size());
     robotSantaPositions.resize(input.size());
 
-    auto transformDirection = [](const char direction) {
+    auto toPosition = [](const char direction) {
         if(direction == '<') return Position(-1, 0);
         if(direction == '^') return Position(0, 1);
         if(direction == '>') return Position(1, 0);
@@ -64,12 +64,12 @@ int main(int argc, char **argv)
     auto insertHouseIds = [&houseIds](Position position){ houseIds.insert(position.toID()); };
 
     index = -1;
-    auto santaDirections = input | std::ranges::views::transform(transformDirection) | std::ranges::views::filter(santaMoves);
+    auto santaDirections = input | std::ranges::views::transform(toPosition) | std::ranges::views::filter(santaMoves);
     std::partial_sum(santaDirections.begin(), santaDirections.end(), santaPositions.begin());
     std::ranges::for_each(santaPositions, insertHouseIds);
     
     index = -1;
-    auto robotSantaDirections = input | std::ranges::views::transform(transformDirection) | std::ranges::views::filter(robotSantaMoves);
+    auto robotSantaDirections = input | std::ranges::views::transform(toPosition) | std::ranges::views::filter(robotSantaMoves);
     std::partial_sum(robotSantaDirections.begin(), robotSantaDirections.end(), robotSantaPositions.begin());
     std::ranges::for_each(robotSantaPositions, insertHouseIds);    
     
