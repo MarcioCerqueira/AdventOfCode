@@ -46,12 +46,9 @@ int main(int argc, char **argv)
     std::cin >> input;
     
     std::vector<Position> santaPositions, robotSantaPositions;
-    int index;
     std::unordered_set<std::string> houseIds;
+    int index;
     
-    santaPositions.resize(input.size());
-    robotSantaPositions.resize(input.size());
-
     auto toPosition = [](const char direction) {
         if(direction == '<') return Position(-1, 0);
         if(direction == '^') return Position(0, 1);
@@ -65,12 +62,12 @@ int main(int argc, char **argv)
 
     index = -1;
     auto santaDirections = input | std::ranges::views::transform(toPosition) | std::ranges::views::filter(santaMoves);
-    std::partial_sum(santaDirections.begin(), santaDirections.end(), santaPositions.begin());
+    std::partial_sum(santaDirections.begin(), santaDirections.end(), std::back_inserter(santaPositions));
     std::ranges::for_each(santaPositions, insertHouseIds);
     
     index = -1;
     auto robotSantaDirections = input | std::ranges::views::transform(toPosition) | std::ranges::views::filter(robotSantaMoves);
-    std::partial_sum(robotSantaDirections.begin(), robotSantaDirections.end(), robotSantaPositions.begin());
+    std::partial_sum(robotSantaDirections.begin(), robotSantaDirections.end(), std::back_inserter(robotSantaPositions));
     std::ranges::for_each(robotSantaPositions, insertHouseIds);    
     
     std::cout << "Visited Houses: " << houseIds.size() << std::endl;
