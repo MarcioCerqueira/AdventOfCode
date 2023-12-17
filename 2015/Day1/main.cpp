@@ -1,27 +1,24 @@
 #include <iostream>
 #include <algorithm>
-#include <optional>
+#include <numeric>
+#include <vector>
+#include <ranges>
 
 int main(int argc, char** argv)
 {
     std::string instructions;
     std::cin >> instructions;
 
-    int position = 0;
-    int finalFloor = 0;
-    std::optional<int> basementPosition;
-    for(char instruction : instructions)
-    {
-        position++;
-
-        if(instruction == '(') finalFloor++;
-        else finalFloor--;
-
-        if(basementPosition.has_value()) continue;
-        if(finalFloor < 0) basementPosition = position;
-    }
+    auto transformInstruction = [](const char instruction){ return instruction == '(' ? 1 : -1; };
+    auto integerInstructions = instructions | std::views::transform(transformInstruction);
     
-    std::cout << "Floor: " << finalFloor << std::endl;
-    if(basementPosition.has_value()) std::cout << "Position: " << basementPosition.value() << std::endl;
+    std::vector<int> floors(integerInstructions.size());
+    std::partial_sum(integerInstructions.begin(), integerInstructions.end(), floors.begin());
+    
+    std::vector<int> negativeFloor{-1};
+    auto result = std::ranges::find_first_of(floors, negativeFloor);
+    
+    std::cout << "Final Floor: " << floors.back() << std::endl;
+    if(result != floors.end()) std::cout << "Position: " << std::distance(floors.begin(), result) + 1 << std::endl;
     return 0;
 }
