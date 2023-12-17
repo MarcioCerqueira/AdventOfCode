@@ -9,8 +9,8 @@ int main(int argc, char** argv)
     std::string instructions;
     std::cin >> instructions;
 
-    auto transformInstruction = [](const char instruction){ return instruction == '(' ? 1 : -1; };
-    auto integerInstructions = instructions | std::views::transform(transformInstruction);
+    auto toInt = [](const char instruction){ return instruction == '(' ? 1 : -1; };
+    auto integerInstructions = instructions | std::views::transform(toInt);
     
     std::vector<int> floors(integerInstructions.size());
     std::partial_sum(integerInstructions.begin(), integerInstructions.end(), floors.begin());
