@@ -1,11 +1,11 @@
 #include <iostream>
-#include <sstream>
 #include <vector>
 #include <memory>
 #include <string>
 #include <unordered_map>
 #include <ranges>
 #include <algorithm>
+#include <regex>
 
 struct Node
 {
@@ -46,22 +46,23 @@ int main(int argc, char **argv)
         
     while(std::getline(std::cin, info))
     {
-        std::stringstream stringStream(info);
-        std::getline(stringStream, sourceName, ' ');
-        std::getline(stringStream, to, ' ');
-        std::getline(stringStream, targetName, ' ');
-        std::getline(stringStream, equals, ' ');
-        std::getline(stringStream, distance, ' ');
-
+        const std::regex sentenceRegex("(\\w+) to (\\w+) = (\\d+)");
+        std::smatch stringMatch;
+        std::regex_search(info, stringMatch, sentenceRegex);
+        
+        const std::string sourceName{stringMatch.str(1)};
+        const std::string targetName{stringMatch.str(2)};
+        const int distance{stoi(stringMatch.str(3))};
+        
         if(!graph.contains(sourceName)) insertNodeInGraph(graph, sourceName);
         if(!graph.contains(targetName)) insertNodeInGraph(graph, targetName);
 
         graph[sourceName]->neighbours.push_back(graph[targetName]);
-        graph[sourceName]->distances.push_back(std::stoi(distance));
+        graph[sourceName]->distances.push_back(distance);
         visited[sourceName] = false;
 
         graph[targetName]->neighbours.push_back(graph[sourceName]);
-        graph[targetName]->distances.push_back(std::stoi(distance));
+        graph[targetName]->distances.push_back(distance);
         visited[targetName] = false;
     }
     

@@ -1,27 +1,23 @@
 #include <iostream>
-#include <sstream>
 #include <string>
 #include <vector>
 #include <unordered_map>
 #include <unordered_set>
 #include <ranges>
 #include <algorithm>
+#include <regex>
 
 void loadAffinityMatrix(const std::string& sentence, std::vector<std::vector<int>>& affinityMatrix, std::unordered_map<std::string, int>& personToID)
 {
-    std::stringstream stringStream(sentence);
-    std::string sourceName, targetName, temp, sign, affinity;
-    std::getline(stringStream, sourceName, ' ');
-    std::getline(stringStream, temp, ' ');
-    std::getline(stringStream, sign, ' ');
-    std::getline(stringStream, affinity, ' ');
-    std::getline(stringStream, temp, ' ');
-    std::getline(stringStream, temp, ' ');
-    std::getline(stringStream, temp, ' ');
-    std::getline(stringStream, temp, ' ');
-    std::getline(stringStream, temp, ' ');
-    std::getline(stringStream, temp, ' ');
-    std::getline(stringStream, targetName, '.');
+    const std::regex sentenceRegex("(\\w+) would (\\w+) (\\d+) happiness units by sitting next to (\\w+).");
+    std::smatch stringMatch;
+    std::regex_search(sentence, stringMatch, sentenceRegex);
+    
+    const std::string sourceName{stringMatch.str(1)};
+    const std::string sign{stringMatch.str(2)};
+    const int affinity{stoi(stringMatch.str(3))};
+    const std::string targetName{stringMatch.str(4)};
+
     if(!personToID.contains(sourceName)) 
     {
         personToID[sourceName] = affinityMatrix.size();
@@ -33,7 +29,7 @@ void loadAffinityMatrix(const std::string& sentence, std::vector<std::vector<int
         affinityMatrix.push_back({});
     }
 
-    const int affinityValue = sign == "gain" ? std::stoi(affinity) : std::stoi(affinity) * -1;
+    const int affinityValue = sign == "gain" ? affinity : affinity * -1;
     if(personToID[sourceName] == 0)
     {
         affinityMatrix[personToID[sourceName]].push_back(affinityValue);

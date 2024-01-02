@@ -1,9 +1,9 @@
 #include <iostream>
-#include <sstream>
 #include <algorithm>
 #include <vector>
 #include <string>
 #include <ranges>
+#include <regex>
 
 struct Reindeer
 {
@@ -28,26 +28,15 @@ std::vector<Reindeer> loadInput()
     std::vector<Reindeer> reindeers;
     while(std::getline(std::cin, input))
     {
+        const std::regex sentenceRegex("(\\w+) can fly (\\d+) km/s for (\\d+) seconds, but then must rest for (\\d+) seconds.");
+        std::smatch stringMatch;
+        std::regex_search(input, stringMatch, sentenceRegex);
+        
         Reindeer reindeer;
-        std::stringstream stringStream(input);
-        std::getline(stringStream, reindeer.name, ' ');
-        std::getline(stringStream, temp, ' ');
-        std::getline(stringStream, temp, ' ');
-        std::getline(stringStream, temp, ' ');
-        reindeer.speedInKmPerSecond = std::stoi(temp);
-        std::getline(stringStream, temp, ' ');
-        std::getline(stringStream, temp, ' ');
-        std::getline(stringStream, temp, ' ');
-        reindeer.runDuration = std::stoi(temp);
-        std::getline(stringStream, temp, ' ');
-        std::getline(stringStream, temp, ' ');
-        std::getline(stringStream, temp, ' ');
-        std::getline(stringStream, temp, ' ');
-        std::getline(stringStream, temp, ' ');
-        std::getline(stringStream, temp, ' ');
-        std::getline(stringStream, temp, ' ');
-        reindeer.restDuration = std::stoi(temp);
-        std::getline(stringStream, temp, ' ');
+        reindeer.name = stringMatch.str(1);
+        reindeer.speedInKmPerSecond = std::stoi(stringMatch.str(2));
+        reindeer.runDuration = std::stoi(stringMatch.str(3));
+        reindeer.restDuration = std::stoi(stringMatch.str(4));
         reindeers.push_back(reindeer);
     }
     return reindeers;
