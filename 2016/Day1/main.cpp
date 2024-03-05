@@ -46,14 +46,12 @@ int main(int argc, char **argv)
         }
 
         const int distance{atoi(instructionView.substr(1).data())};
-        for(int distanceTraversed = 1; distanceTraversed <= distance; ++distanceTraversed){
+        std::ranges::for_each(std::views::iota(1, distance + 1), [&character, &easterBunnyHQ, &visitedLocations](const int index){
             character.position.x += character.direction.x;
             character.position.y += character.direction.y;
-            if(visitedLocations.contains(character.position.getID()) && !easterBunnyHQ.has_value())
-                easterBunnyHQ = character.position;
+            if(visitedLocations.contains(character.position.getID()) && !easterBunnyHQ.has_value()) easterBunnyHQ = character.position;
             visitedLocations.insert(character.position.getID());
-        }
-        
+        });
     };
 
     std::ranges::for_each(std::views::split(std::string_view(path), std::string_view(", ")), walk);
